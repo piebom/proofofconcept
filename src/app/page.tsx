@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -7,6 +8,9 @@ export default function Home() {
       <p className="text-lg">
         Offline-first proof of concept
       </p>
+      <Link href="/form/create">
+        Formulier invullen
+      </Link>
     </main>
   );
 }

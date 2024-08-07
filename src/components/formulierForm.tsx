@@ -26,8 +26,8 @@ import { Textarea } from './ui/textarea'
 import { useQuery } from '@tanstack/react-query'
 import { useCategoryData } from '@/hooks/useCategories'
 import axios from 'axios'
-import { useCreateForm } from '@/hooks/useForm'
 import { useRouter } from 'next/navigation'
+import { useCreateForm } from '@/hooks/useForm'
 
 export const formSchema = z.object({
   title: z.string().min(1).max(255, "Title must be at most 255 characters"),
@@ -50,12 +50,15 @@ function FormulierForm() {
   })
  
   function onSubmit(values: z.infer<typeof formSchema>) {
-   const response = createForm.mutate(values, {
-    onSuccess: () => {
-      toast.success("Form created successfully")
-      router.push("/")
-    }
-   })
+    createForm.mutate(values,{
+      onSuccess: () => {
+        toast.success('Form created successfully')
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+    })
+    router.push('/')
   }
 
   return (

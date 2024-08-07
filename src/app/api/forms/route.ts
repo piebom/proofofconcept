@@ -5,7 +5,10 @@ export async function GET() {
   const forms = await prisma.form.findMany({
     include: {
         category: true,
-    }
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
   });
   return NextResponse.json(forms);
 }

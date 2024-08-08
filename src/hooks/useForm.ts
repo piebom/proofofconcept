@@ -8,6 +8,58 @@ export const formKeys = {
   details: () => [...formKeys.all(), 'detail'],
   detail: (id: string) => [...formKeys.details(), id],
 }
+
+interface UpdateFormParams {
+  id: string;
+  updatedForm: {
+      title: string;
+      description: string;
+      category: string;
+  };
+}
+
+export const useUpdateForm = () => {
+  const queryClient = useQueryClient();
+
+  const updateFormMutation = useMutation({
+      mutationKey: formKeys.all(),
+      mutationFn: async ({ id, updatedForm }: UpdateFormParams) => {
+          // Perform the API call to update the form
+          const response = await axios.put(`/api/forms/${id}`, updatedForm);
+          return response.data;
+      },
+      onMutate: async ({ id, updatedForm }: UpdateFormParams) => {
+          await queryClient.cancelQueries({ queryKey: formKeys.list() });
+
+          const previousData = queryClient.getQueryData(formKeys.list());
+
+          // Optimistically update the query cache
+          queryClient.setQueryData(formKeys.list(), (old: any) => 
+              (old || []).map((form: any) =>
+                  form.id === id ? { ...form, ...updatedForm } : form
+              )
+          );
+
+          return { previousData };
+      },
+      onError: (error, _, context) => {
+          // Roll back to previous state if mutation fails
+          if (context?.previousData) {
+              queryClient.setQueryData(formKeys.list(), context.previousData);
+          }
+
+          // Log error message to console
+          console.error(error?.message || 'An error occurred');
+      },
+      onSettled: () => {
+          // Invalidate queries to ensure data is fresh
+          queryClient.invalidateQueries({ queryKey: formKeys.list() });
+      },
+  });
+
+  return updateFormMutation;
+};
+
 export const useCreateForm = () => {
     const queryClient = useQueryClient()
 
@@ -37,6 +89,46 @@ export const useCreateForm = () => {
 
     return createFormMutation
 }
+
+export const useDeleteForm = () => {
+  const queryClient = useQueryClient();
+
+  // Delete a form
+  const deleteFormMutation = useMutation({
+      mutationKey: formKeys.all(),
+      mutationFn: async (id: string) => {
+          // Perform the API call to delete the form
+          await axios.delete(`/api/forms/${id}`);
+      },
+      onMutate: async (id) => {
+          await queryClient.cancelQueries({ queryKey: formKeys.list() });
+
+          const previousData = queryClient.getQueryData(formKeys.list());
+
+          // Optimistically update the query cache
+          queryClient.setQueryData(formKeys.list(), (old: any) => 
+              (old || []).filter((form: any) => form.id !== id)
+          );
+
+          return { previousData };
+      },
+      onError: (error, id, context) => {
+          // Roll back to previous state if mutation fails
+          if (context?.previousData) {
+              queryClient.setQueryData(formKeys.list(), context.previousData);
+          }
+
+          // Log error message to console
+          console.error(error?.message || 'An error occurred');
+      },
+      onSettled: () => {
+          // Invalidate queries to ensure data is fresh
+          queryClient.invalidateQueries({ queryKey: formKeys.list() });
+      },
+  });
+
+  return deleteFormMutation;
+};
 
 export const useFormDetail = (formId: string) => {
   const queryClient = useQueryClient()

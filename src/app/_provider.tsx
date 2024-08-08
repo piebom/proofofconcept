@@ -20,12 +20,6 @@ export default function Provider({children}: {children: React.ReactNode}) {
         },
         // configure global cache callbacks to show toast notifications
         mutationCache: new MutationCache({
-          onSuccess: (data:any) => {
-            toast.success(data.message)
-          },
-          onError: (error) => {
-            toast.error(error.message)
-          },
         }),
       })
 

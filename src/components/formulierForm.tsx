@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from './ui/button'
 import { toast } from 'sonner'
 import { z } from "zod"
@@ -26,8 +26,8 @@ import { Textarea } from './ui/textarea'
 import { useQuery } from '@tanstack/react-query'
 import { useCategoryData } from '@/hooks/useCategories'
 import axios from 'axios'
-import { useRouter } from 'next/navigation'
-import { useCreateForm } from '@/hooks/useForm'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCreateForm, useFormDetail, useUpdateForm } from '@/hooks/useForm'
 
 export const formSchema = z.object({
   title: z.string().min(1).max(255, "Title must be at most 255 characters"),
@@ -36,29 +36,47 @@ export const formSchema = z.object({
 });
 
 
-function FormulierForm() {
+function FormulierForm({formData}: {formData?: any}) {
   const { data, status, error } = useCategoryData();
   const router = useRouter();
   const createForm = useCreateForm()
+  const updateForm = useUpdateForm()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      category: data?.[0].id,
-      description: "",
+      title: formData ? formData.title : '',
+      category: formData ? formData.categoryId.toString() : data?.[0].id.toString(),
+      description: formData ? formData.description : '',
     },
   })
+
+  // useEffect(() => {
+  //   form.reset({
+  //     title: formData ? formData.title : '',
+  //     category: formData ? formData.category.id.toString() : data?.[0].id.toString(),
+  //     description: formData ? formData.description : '',
+  //   })
+  // }, [formData])
  
   function onSubmit(values: z.infer<typeof formSchema>) {
-    createForm.mutate(values,{
-      onSuccess: () => {
-        toast.success('Form created successfully')
-      },
-      onError: (error) => {
-        toast.error(error.message)
-      },
-    })
-    router.push('/')
+    if(formData) {
+      console.log({
+        id: formData.id,
+        updatedForm: values
+      })
+      updateForm.mutate({
+        id: formData.id,
+        updatedForm: values
+      })
+      router.push('/')
+      toast.success('Form updated successfully')
+    }
+    else{
+      createForm.mutate(values)
+      router.push('/')
+      toast.success('Form created successfully')
+    }
   }
 
   return (

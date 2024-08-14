@@ -18,6 +18,19 @@ interface UpdateFormParams {
   };
 }
 
+interface CreateFormData {
+  title: string;
+  description: string;
+  category: string;
+}
+
+interface FormInputData {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+}
+
 export const useUpdateForm = () => {
   const queryClient = useQueryClient();
 
@@ -61,34 +74,36 @@ export const useUpdateForm = () => {
 };
 
 export const useCreateForm = () => {
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
 
     // Create a new form
     const createFormMutation = useMutation({
         mutationKey: formKeys.all(),
-        mutationFn: async (newForm) => {
+        mutationFn: async (newForm: CreateFormData) => {
             // Perform the API call to create the form
-            const response = await axios.post('/api/forms', newForm)
-            return response.data
+            const response = await axios.post('/api/forms', newForm);
+            return response.data;
         },
-        onMutate: async (newForm) => {
-            await queryClient.cancelQueries({ queryKey: formKeys.list() })
-            const previousData = queryClient.getQueryData(formKeys.list())
+        onMutate: async (newForm: CreateFormData) => {
+            await queryClient.cancelQueries({ queryKey: formKeys.list() });
+            const previousData = queryClient.getQueryData<CreateFormData[]>(formKeys.list());
 
-            queryClient.setQueryData(formKeys.list(), old => [newForm, ...(old || [])])
+            queryClient.setQueryData<CreateFormData[]>(formKeys.list(), old => [newForm, ...(old || [])]);
 
-            return { previousData }
+            return { previousData };
         },
-        onError: (_, __, context) => {
-            queryClient.setQueryData(formKeys.list(), context!.previousData)
+        onError: (_, __, context: { previousData: CreateFormData[] | undefined } | undefined) => {
+            if (context?.previousData) {
+                queryClient.setQueryData(formKeys.list(), context.previousData);
+            }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: formKeys.list() })
+            queryClient.invalidateQueries({ queryKey: formKeys.list() });
         },
-    })
+    });
 
-    return createFormMutation
-}
+    return createFormMutation;
+};
 
 export const useDeleteForm = () => {
   const queryClient = useQueryClient();
@@ -131,41 +146,46 @@ export const useDeleteForm = () => {
 };
 
 export const useFormDetail = (formId: string) => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const formQuery = useQuery({
+  const formQuery = useQuery<FormInputData>({
     queryKey: formKeys.detail(formId),
-    queryFn: async () => await axios.get(`/api/forms/${formId}`).then((res) => res.data),
-  })
+    queryFn: async () => {
+      const response = await axios.get(`/api/forms/${formId}`);
+      return response.data;
+    },
+  });
 
   const updateForm = useMutation({
     mutationKey: formKeys.detail(formId),
-    mutationFn: async (updatedForm) => {
+    mutationFn: async (updatedForm: FormInputData) => {
       // Perform the API call to update the form
-      const response = await axios.put(`/api/forms/${formId}`, updatedForm)
-      return response.data
+      const response = await axios.put(`/api/forms/${formId}`, updatedForm);
+      return response.data;
     },
-    onMutate: async (updatedForm) => {
-      await queryClient.cancelQueries({ queryKey: formKeys.detail(formId) })
-      const previousData = queryClient.getQueryData(formKeys.detail(formId))
+    onMutate: async (updatedForm: FormInputData) => {
+      await queryClient.cancelQueries({ queryKey: formKeys.detail(formId) });
+      const previousData = queryClient.getQueryData<FormInputData>(formKeys.detail(formId));
 
-      queryClient.setQueryData(formKeys.detail(formId), old => ({
+      queryClient.setQueryData<FormInputData>(formKeys.detail(formId), old => ({
         ...old,
         ...updatedForm,
-      }))
+      }));
 
-      return { previousData }
+      return { previousData };
     },
-    onError: (_, __, context) => {
-      queryClient.setQueryData(formKeys.detail(formId), context!.previousData)
+    onError: (_: unknown, __: unknown, context: { previousData: FormInputData | undefined } | undefined) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(formKeys.detail(formId), context.previousData);
+      }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: formKeys.detail(formId) })
+      queryClient.invalidateQueries({ queryKey: formKeys.detail(formId) });
     },
-  })
+  });
 
   return {
     updateForm: updateForm.mutate,
     formQuery,
-  }
-}
+  };
+};

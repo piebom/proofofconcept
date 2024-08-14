@@ -20,7 +20,7 @@ function FormCreate({ params }: { params: { id: string } }) {
             go back
         </Link>
     <div className='flex justify-center flex-1 items-center container mx-auto'>
-    <FormulierForm formData={formQuery.data}/>
+    {/* <FormulierForm formData={formQuery.data}/> */}
     </div>
 
     </div>

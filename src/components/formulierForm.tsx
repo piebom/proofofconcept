@@ -37,7 +37,8 @@ export const formSchema = z.object({
 
 
 function FormulierForm({formData}: {formData?: any}) {
-  const { data, status, error } = useCategoryData();
+  // const { data, status, error } = useCategoryData();
+  const [data, setData] = React.useState<any>([])
   const router = useRouter();
   const createForm = useCreateForm()
   const updateForm = useUpdateForm()

@@ -46,7 +46,7 @@ function FormulierForm({formData}: {formData?: any}) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: formData ? formData.title : '',
-      category: formData ? formData.categoryId.toString() : data?.[0].id.toString(),
+      category: formData ? formData.categoryId.toString() : "1",
       description: formData ? formData.description : '',
     },
   })

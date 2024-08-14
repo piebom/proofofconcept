@@ -49,7 +49,7 @@ const deleteCategory = async (id: number) => {
 
 export function useCategoryData() {
   return useQuery({
-    queryKey: ['categoryData'],
+    queryKey: ['categories'],
     queryFn: fetchCategories,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

@@ -104,7 +104,7 @@ function FormulierForm({formData}: {formData?: any}) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {data.length > 0 && data?.map((category:any) => (
+                  {data && data.length > 0 && data?.map((category:any) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}
                     </SelectItem>

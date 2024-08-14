@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 interface NetworkStatusContextProps {
   isOnline: boolean;
+  wasOffline: boolean;
 }
 
 const NetworkStatusContext = createContext<NetworkStatusContextProps | undefined>(undefined);
@@ -15,6 +16,7 @@ interface NetworkStatusProviderProps {
 
 export const NetworkStatusProvider: React.FC<NetworkStatusProviderProps> = ({ children }) => {
   const [isOnline, setIsOnline] = useState<boolean>(true); // Default to true
+  const [wasOffline, setWasOffline] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
@@ -25,6 +27,7 @@ export const NetworkStatusProvider: React.FC<NetworkStatusProviderProps> = ({ ch
 
       const handleOffline = () => {
         setIsOnline(false);
+        setWasOffline(true);
         toast.error('You are offline now!');
       };
 
@@ -44,7 +47,7 @@ export const NetworkStatusProvider: React.FC<NetworkStatusProviderProps> = ({ ch
   }, []);
 
   return (
-    <NetworkStatusContext.Provider value={{ isOnline }}>
+    <NetworkStatusContext.Provider value={{ isOnline, wasOffline }}>
       {children}
     </NetworkStatusContext.Provider>
   );

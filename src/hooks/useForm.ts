@@ -14,14 +14,14 @@ interface UpdateFormParams {
   updatedForm: {
       title: string;
       description: string;
-      category: string;
+      categoryId: string;
   };
 }
 
 interface CreateFormData {
   title: string;
   description: string;
-  category: string;
+  categoryId: string;
 }
 
 interface FormInputData {

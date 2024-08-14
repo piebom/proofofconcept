@@ -1,3 +1,82 @@
 {
-  "extends": "next/core-web-vitals"
+  "env": {
+      "browser": true,
+      "es2022": true
+  },
+  "extends": [
+      "airbnb",
+      "plugin:react/recommended",
+      "plugin:prettier/recommended",
+      "plugin:tailwindcss/recommended",
+      "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+      "ecmaFeatures": {
+          "jsx": true
+      },
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+  },
+  "plugins": ["react", "react-hooks", "@typescript-eslint", "prettier"],
+  "rules": {
+      "prettier/prettier": [
+          "error",
+          {
+              "endOfLine": "auto"
+          }
+      ],
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "error",
+      "react/jsx-filename-extension": [
+          1,
+          {
+              "extensions": [".tsx"]
+          }
+      ],
+      "react/function-component-definition": [
+          1,
+          {
+              "namedComponents": "arrow-function",
+              "unnamedComponents": "arrow-function"
+          }
+      ],
+      "import/no-extraneous-dependencies": [
+          "error",
+          {
+              "devDependencies": true
+          }
+      ],
+      "import/no-relative-packages": "error",
+      "import/extensions": [
+          "error",
+          "ignorePackages",
+          {
+              "ts": "error",
+              "tsx": "error"
+          }
+      ],
+      "react/self-closing-comp": [
+          "error",
+          {
+              "component": true,
+              "html": true
+          }
+      ],
+      "@typescript-eslint/no-shadow": "error",
+      "no-shadow": "off",
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+      "import/prefer-default-export": "off"
+  },
+  "settings": {
+      "import/resolver": {
+          "typescript": {},
+          "node": {
+              "paths": ["src"],
+              "extensions": [".ts", ".tsx"]
+          }
+      }
+  },
+  "ignorePatterns": ["dist", "node_modules"]
 }

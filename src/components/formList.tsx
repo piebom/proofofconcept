@@ -7,10 +7,13 @@ import React from 'react';
 import { toast } from 'sonner';
 import { Skeleton } from './ui/skeleton';
 import { Form } from '@prisma/client';
+import { useNetworkStatus } from './networkStatusProvider';
+import { set } from 'zod';
 
 type Props = {}
 
 function FormList({}: Props) {
+    const {isOnline, wasOffline} = useNetworkStatus();
     const formsQuery = useQuery({
         queryKey: formKeys.list(),
         queryFn: async () => {
@@ -21,14 +24,55 @@ function FormList({}: Props) {
       const [data, setData] = React.useState<Form[]>([]);
 
       React.useEffect(() => {
-        if (formsQuery.data  && data.length === 0) {
+        if (formsQuery.data && data?.length === 0) {
           setData(formsQuery.data);
         }
-      }, [formsQuery.data]);
+      
+        if (isOnline && !wasOffline) {
+          setData(formsQuery.data);
+        }
+      
+        if (isOnline && wasOffline) {
+          setData((prev) => {
+            const newData = formsQuery.data;
+            console.log("New Data:", newData);
+        
+            const updatedData = prev.map((form) => {
+              console.log("Current Form:", form);
+              // If the form has a null ID (created offline), find its match in the new data
+              if (form.id === undefined) {
+                const matchingForm = newData.find((f: Form) => {
+                  const isTitleMatch = f.title.trim() === form.title.trim();
+                  const isDescriptionMatch = f.description.trim() === form.description.trim();
+                  const isCategoryMatch = f.categoryId === Number(form.categoryId); // Ensure both are numbers
+        
+                  console.log(`Comparing: ${f.title} with ${form.title} -> ${isTitleMatch}`);
+                  console.log(`Comparing: ${f.description} with ${form.description} -> ${isDescriptionMatch}`);
+                  console.log(`Comparing: ${f.categoryId} with ${form.categoryId} -> ${isCategoryMatch}`);
+        
+                  return isTitleMatch && isDescriptionMatch && isCategoryMatch;
+                });
+        
+                console.log("Matching Form:", matchingForm);
+        
+                if (matchingForm) {
+                  // Update the form with the correct ID from the new data
+                  return { ...form, id: matchingForm.id };
+                }
+              }
+        
+              // If the form was not created offline (ID is not null), return it unchanged
+              return form;
+            });
+        
+            return updatedData;
+          });
+        }
+      }, [formsQuery.data, isOnline, wasOffline]);
 
       const deleteForm = useDeleteForm();
       const router = useRouter();
-      if (data.length === 0 && !formsQuery.data) {
+      if (data?.length === 0 && !formsQuery.data) {
         return (
           <div className='flex flex-col space-y-4'>
             <Skeleton className='w-[400px] h-[80px] rounded-[14px] border'/>
@@ -39,7 +83,7 @@ function FormList({}: Props) {
         )
       }
 
-      if (data.length > 0) {
+      if (data?.length > 0) {
         return (
           <div className='flex flex-col items-center space-y-4 max-h-[70svh] px-10 overflow-y-auto'>
             {formsQuery.data.length !== data.length && (

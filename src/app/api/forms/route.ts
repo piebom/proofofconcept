@@ -14,12 +14,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { title, category, description } = await request.json();
+  const { title, categoryId, description } = await request.json();
   const form = await prisma.form.create({
     data: {
       title,
       category: {connect: {
-        id: parseInt(category),
+        id: parseInt(categoryId),
       }},
       description,
     },

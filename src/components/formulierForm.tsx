@@ -31,7 +31,7 @@ import { useCreateForm, useFormDetail, useUpdateForm } from '@/hooks/useForm'
 
 export const formSchema = z.object({
   title: z.string().min(1).max(255, "Title must be at most 255 characters"),
-  category: z.string().min(1, "Category is required"),
+  categoryId: z.string().min(1, "Category is required"),
   description: z.string().min(1).max(255, "Description must be at most 255 characters"),
 });
 
@@ -46,7 +46,7 @@ function FormulierForm({formData}: {formData?: any}) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: formData ? formData.title : '',
-      category: formData ? formData.categoryId.toString() : "1",
+      categoryId: formData ? formData.categoryId.toString() : "1",
       description: formData ? formData.description : '',
     },
   })
@@ -93,7 +93,7 @@ function FormulierForm({formData}: {formData?: any}) {
         />
         <FormField
           control={form.control}
-          name="category"
+          name="categoryId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>

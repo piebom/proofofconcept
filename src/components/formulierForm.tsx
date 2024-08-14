@@ -37,8 +37,7 @@ export const formSchema = z.object({
 
 
 function FormulierForm({formData}: {formData?: any}) {
-  // const { data, status, error } = useCategoryData();
-  const [data, setData] = React.useState<any>([])
+  const { data, status, error } = useCategoryData();
   const router = useRouter();
   const createForm = useCreateForm()
   const updateForm = useUpdateForm()
@@ -62,10 +61,6 @@ function FormulierForm({formData}: {formData?: any}) {
  
   function onSubmit(values: z.infer<typeof formSchema>) {
     if(formData) {
-      console.log({
-        id: formData.id,
-        updatedForm: values
-      })
       updateForm.mutate({
         id: formData.id,
         updatedForm: values
@@ -109,7 +104,7 @@ function FormulierForm({formData}: {formData?: any}) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {data?.map((category:any) => (
+                  {data.length > 0 && data?.map((category:any) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}
                     </SelectItem>

@@ -38,7 +38,7 @@ interface FormulierFormProps {
   formData?: {
     id: string;
     title: string;
-    categoryId: string;
+    category: string;
     description: string;
   };
 }
@@ -53,7 +53,7 @@ function FormulierForm({ formData }: FormulierFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: formData ? formData.title : '',
-      category: formData ? formData.categoryId.toString() : '1',
+      category: formData ? formData.category.toString() : '1',
       description: formData ? formData.description : '',
     },
   });

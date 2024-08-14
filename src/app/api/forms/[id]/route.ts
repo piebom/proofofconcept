@@ -14,13 +14,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
-    const { title, category, description } = await request.json();
+    const { title, categoryId, description } = await request.json();
     const form = await prisma.form.update({
       where: { id: parseInt(params.id) },
       data: {
         title,
         category: {connect: {
-          id: parseInt(category),
+          id: parseInt(categoryId),
         }},
         description,
       },

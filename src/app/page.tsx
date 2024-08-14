@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 
 const Home = () => {
   const router = useRouter();
+  const { data, status, error } = useCategoryData();
   return (
     <main className="flex flex-1 w-full flex-col justify-center items-center p-12 space-y-6">
       <FormList/>

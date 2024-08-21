@@ -55,6 +55,9 @@ function FormList({}: Props) {
             return updatedData;
           });
         }
+        if (!isOnline) {
+          setData(formsQuery.data || []); // Set cached data or an empty array if no cached data is available
+        }
       }, [formsQuery.data, isOnline, wasOffline]);
 
       const deleteForm = useDeleteForm();

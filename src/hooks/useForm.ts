@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
+import { toast } from 'sonner';
 
 export const formKeys = {
   all: () => ['forms'],
@@ -61,13 +62,15 @@ export const useUpdateForm = () => {
               queryClient.setQueryData(formKeys.list(), context.previousData);
           }
 
-          // Log error message to console
-          console.error(error?.message || 'An error occurred');
+          toast.error("An error occurred while updating the form");
       },
       onSettled: () => {
           // Invalidate queries to ensure data is fresh
           queryClient.invalidateQueries({ queryKey: formKeys.list() });
       },
+      onSuccess: () => {
+        toast.success('Form updated successfully');
+      }
   });
 
   return updateFormMutation;
@@ -96,10 +99,14 @@ export const useCreateForm = () => {
             if (context?.previousData) {
                 queryClient.setQueryData(formKeys.list(), context.previousData);
             }
+            toast.error('An error occurred while creating the form');
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: formKeys.list() });
         },
+        onSuccess: () => {
+          toast.success('Form created successfully');
+        }
     });
 
     return createFormMutation;

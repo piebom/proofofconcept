@@ -35,36 +35,23 @@ function FormList({}: Props) {
         if (isOnline && wasOffline) {
           setData((prev) => {
             const newData = formsQuery.data;
-            console.log("New Data:", newData);
-        
             const updatedData = prev.map((form) => {
-              console.log("Current Form:", form);
-              // If the form has a null ID (created offline), find its match in the new data
               if (form.id === undefined) {
                 const matchingForm = newData.find((f: Form) => {
                   const isTitleMatch = f.title.trim() === form.title.trim();
                   const isDescriptionMatch = f.description.trim() === form.description.trim();
-                  const isCategoryMatch = f.categoryId === Number(form.categoryId); // Ensure both are numbers
-        
-                  console.log(`Comparing: ${f.title} with ${form.title} -> ${isTitleMatch}`);
-                  console.log(`Comparing: ${f.description} with ${form.description} -> ${isDescriptionMatch}`);
-                  console.log(`Comparing: ${f.categoryId} with ${form.categoryId} -> ${isCategoryMatch}`);
-        
+                  const isCategoryMatch = f.categoryId === Number(form.categoryId);
                   return isTitleMatch && isDescriptionMatch && isCategoryMatch;
                 });
         
                 console.log("Matching Form:", matchingForm);
         
                 if (matchingForm) {
-                  // Update the form with the correct ID from the new data
                   return { ...form, id: matchingForm.id };
                 }
               }
-        
-              // If the form was not created offline (ID is not null), return it unchanged
               return form;
             });
-        
             return updatedData;
           });
         }
@@ -87,9 +74,9 @@ function FormList({}: Props) {
         return (
           <div className='flex flex-col items-center space-y-4 max-h-[70svh] px-10 overflow-y-auto'>
             {formsQuery.data.length !== data.length && (
-              <p>Er is nieuwere data beschikbaar, klik <span onClick={() => {
+              <p>There is new data available, click <span onClick={() => {
                 setData(formsQuery.data);
-              }} className='underline text-blue-500 hover:cursor-pointer'>hier</span> om de data te updaten</p>
+              }} className='underline text-blue-500 hover:cursor-pointer'>here</span> to refresh data</p>
             )}
             {data.map((form: any) => (
               <div key={form.id} className='border px-4 py-2 rounded-[14px] bg-slate-100 shadow w-[400px]'>

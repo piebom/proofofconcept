@@ -21,8 +21,9 @@ export default function Provider({children}: {children: React.ReactNode}) {
         defaultOptions: {
           queries: {
             gcTime: 1000 * 60 * 60 * 24, // 24 hours
-            staleTime: 2000,
+            staleTime: Infinity,
             retry: 0,
+            networkMode:  'offlineFirst'
           },
         },
         // configure global cache callbacks to show toast notifications

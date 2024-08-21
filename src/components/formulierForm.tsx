@@ -50,14 +50,6 @@ function FormulierForm({formData}: {formData?: any}) {
       description: formData ? formData.description : '',
     },
   })
-
-  // useEffect(() => {
-  //   form.reset({
-  //     title: formData ? formData.title : '',
-  //     category: formData ? formData.category.id.toString() : data?.[0].id.toString(),
-  //     description: formData ? formData.description : '',
-  //   })
-  // }, [formData])
  
   function onSubmit(values: z.infer<typeof formSchema>) {
     if(formData) {
@@ -66,12 +58,10 @@ function FormulierForm({formData}: {formData?: any}) {
         updatedForm: values
       })
       router.push('/')
-      toast.success('Form updated successfully')
     }
     else{
       createForm.mutate(values)
       router.push('/')
-      toast.success('Form created successfully')
     }
   }
 

@@ -147,6 +147,9 @@ export const useDeleteForm = () => {
           // Invalidate queries to ensure data is fresh
           queryClient.invalidateQueries({ queryKey: formKeys.list() });
       },
+      onSuccess: () => {
+        toast.success('Form deleted successfully');
+      }
   });
 
   return deleteFormMutation;

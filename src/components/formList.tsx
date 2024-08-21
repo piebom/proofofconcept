@@ -18,7 +18,8 @@ function FormList({}: Props) {
         queryKey: formKeys.list(),
         queryFn: async () => {
            return (await axios.get('/api/forms')).data;
-        }
+        },
+        refetchOnReconnect: true,
       });
 
       const [data, setData] = React.useState<Form[]>([]);
@@ -55,9 +56,9 @@ function FormList({}: Props) {
             return updatedData;
           });
         }
-        if (!isOnline) {
-          setData(formsQuery.data || []); // Set cached data or an empty array if no cached data is available
-        }
+        // if (!isOnline) {
+        //   setData(formsQuery.data || []); // Set cached data or an empty array if no cached data is available
+        // }
       }, [formsQuery.data, isOnline, wasOffline]);
 
       const deleteForm = useDeleteForm();
@@ -100,7 +101,7 @@ function FormList({}: Props) {
                       className='hover:text-red-400 hover:cursor-pointer'
                       onClick={() => {
                         deleteForm.mutate(form.id);
-                        toast.success('Form deleted successfully');
+                        toast.info('Form will be deleted when you are back online');
                       }}
                       size={16}
                     />
